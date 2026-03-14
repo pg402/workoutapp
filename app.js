@@ -1,11 +1,11 @@
 const exercises = [
-    { name: "Cat-Cow", reps: "5 Repetitions", cue: "Move with your breath. Don't force the range of motion.", media: "1.gif" },
-    { name: "Dead Bug", reps: "20 Repetitions", cue: "Keep your lower back glued to the floor.", media: "2.gif" },
-    { name: "Glute Bridge", reps: "5 Per Side", cue: "Drive through the heel, not the toes.", media: "3.gif" },
-    { name: "Bird Dogs", reps: "20 Repetitions", cue: "Keep your back flat—don't let the water spill.", media: "4.gif" },
-    { name: "Pushup & Rotation", reps: "10 Repetitions", cue: "Follow your hand with your eyes as you reach up.", media: "5.gif" },
-    { name: "Lunges", reps: "10 Per Leg", cue: "Keep your chest up tall.", media: "6.gif" },
-    { name: "Single Leg Deadlift", reps: "10 Per Leg", cue: "Find a spot on the floor to stare at for balance.", media: "7.gif" }
+    { name: "Cat-Cow", reps: "5 Repetitions", cue: "Move with your breath. Don't force the range of motion.", media: "./1.gif" },
+    { name: "Dead Bug", reps: "20 Repetitions", cue: "Keep your lower back glued to the floor.", media: "./2.gif" },
+    { name: "Glute Bridge", reps: "5 Per Side", cue: "Drive through the heel, not the toes.", media: "./3.gif" },
+    { name: "Bird Dogs", reps: "20 Repetitions", cue: "Keep your back flat—don't let the water spill.", media: "./4.gif" },
+    { name: "Pushup & Rotation", reps: "10 Repetitions", cue: "Follow your hand with your eyes as you reach up.", media: "./5.gif" },
+    { name: "Lunges", reps: "10 Per Leg", cue: "Keep your chest up tall.", media: "./6.gif" },
+    { name: "Single Leg Deadlift", reps: "10 Per Leg", cue: "Find a spot on the floor to stare at for balance.", media: "./7.gif" }
 ];
 
 let currentIndex = 0;
@@ -16,7 +16,6 @@ function nextExercise() {
     if (currentIndex < exercises.length) {
         updateUI();
     } else {
-        // Show completion screen
         const content = document.getElementById('workout-content');
         content.innerHTML = `
             <div style="margin-top: 50px;">
@@ -34,20 +33,16 @@ function nextExercise() {
 function updateUI() {
     const ex = exercises[currentIndex];
     
-    // Update content
     document.getElementById('ex-name').innerText = ex.name;
     document.getElementById('ex-reps').innerText = ex.reps;
     document.getElementById('ex-cue').innerText = ex.cue;
     
-    // Update Image Source
     const imgElement = document.getElementById('ex-media');
-    // We add a timestamp to the URL to force the GIF to restart from the beginning
-    imgElement.src = ex.media + "?t=" + new Date().getTime();
+    // REMOVED timestamp logic to prevent 404 errors on GitHub Pages
+    imgElement.src = ex.media;
 
-    // Update Progress
     const progressPercentage = ((currentIndex + 1) / exercises.length) * 100;
     document.getElementById('progressBar').style.width = progressPercentage + "%";
     
-    // Reset scroll position
     window.scrollTo(0, 0);
 }
