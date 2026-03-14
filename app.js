@@ -1,3 +1,4 @@
+/* Version: March 14, 2026 | 1:55 PM | Update: Added image error handling and verified relative paths for Lunges (6.gif) */
 const exercises = [
     { name: "Cat-Cow", reps: "5 Repetitions", cue: "Move with your breath. Don't force the range of motion.", media: "./1.gif" },
     { name: "Dead Bug", reps: "20 Repetitions", cue: "Keep your lower back glued to the floor.", media: "./2.gif" },
@@ -38,7 +39,13 @@ function updateUI() {
     document.getElementById('ex-cue').innerText = ex.cue;
     
     const imgElement = document.getElementById('ex-media');
-    // REMOVED timestamp logic to prevent 404 errors on GitHub Pages
+    
+    // Safety check: if image fails, log it and show a placeholder or keep previous
+    imgElement.onerror = function() {
+        console.error("Failed to load image at: " + ex.media);
+        this.alt = "Video currently unavailable";
+    };
+    
     imgElement.src = ex.media;
 
     const progressPercentage = ((currentIndex + 1) / exercises.length) * 100;
