@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dad's Daily Flow</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <main class="exercise-card">
+            <header>
+                <h2 id="ex-name">Cat-Cow</h2>
+                <p class="rep-count" id="ex-reps">5 Repetitions</p>
+            </header>
+
+            <div class="visual-area">
+                <video id="ex-video" autoplay loop muted playsinline>
+                    <source src="cat-cow.mp4" type="video/mp4">
+                </video>
+            </div>
+
+            <div class="instruction-box">
+                <p id="ex-cue">Move with your breath. Don't force the range of motion.</p>
+            </div>
+        </main>
+
+        <footer>
+            <button class="next-btn" onclick="nextExercise()">NEXT EXERCISE</button>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
