@@ -1,120 +1,55 @@
-:root {
-    --bg-color: #f4f4f7;
-    --text-main: #1a1a1a;
-    --accent-blue: #007aff;
-    --card-bg: #ffffff;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Dad's Morning Workout</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
+    <div class="app-container">
+        <div id="progress-wrapper" class="progress-container" style="display: none;">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
 
-body {
-    margin: 0;
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    display: flex;
-    justify-content: center;
-    height: 100vh;
-    overflow: hidden;
-}
+        <main class="exercise-card" id="workout-content">
+            <div id="login-screen">
+                <h1 style="margin-bottom: 30px;">Welcome Back</h1>
+                <input type="text" id="user-name" placeholder="Name" class="login-input">
+                <input type="email" id="user-email" placeholder="Email" class="login-input">
+                <button class="next-btn" onclick="handleLogin()" style="margin-top: 20px;">LOGIN</button>
+            </div>
+            
+            <div id="welcome-screen" style="display: none;">
+                <h2 id="welcome-text">Hi!</h2>
+                <p id="stats-text" style="font-size: 1.3rem; margin: 20px 0; color: #48484a;"></p>
+                <button class="next-btn" onclick="startWorkout()">START WORKOUT</button>
+            </div>
 
-.app-container {
-    width: 100%;
-    max-width: 700px;
-    display: flex;
-    flex-direction: column;
-    background: var(--card-bg);
-}
+            <div id="exercise-area" style="display: none;">
+                <header>
+                    <h2 id="ex-name"></h2>
+                    <p class="rep-count" id="ex-reps"></p>
+                </header>
 
-.progress-container {
-    height: 8px;
-    background: #e5e5ea;
-}
+                <div class="visual-area">
+                    <img id="ex-media" src="" alt="Workout Animation">
+                </div>
 
-.progress-bar {
-    height: 100%;
-    background: var(--accent-blue);
-    width: 0%; 
-    transition: width 0.5s ease;
-}
+                <div class="instruction-box">
+                    <p id="ex-cue"></p>
+                </div>
+            </div>
+        </main>
 
-.exercise-card {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px 20px;
-    text-align: center;
-    overflow-y: auto;
-}
+        <footer id="app-footer" style="display: none;">
+            <button class="next-btn" id="next-button" onclick="nextExercise()">NEXT EXERCISE</button>
+        </footer>
+    </div>
 
-.login-input {
-    width: 100%;
-    padding: 20px;
-    margin-bottom: 15px;
-    border: 2px solid #e5e5ea;
-    border-radius: 12px;
-    font-size: 1.2rem;
-    outline: none;
-}
-
-.login-input:focus {
-    border-color: var(--accent-blue);
-}
-
-h2 { font-size: 2.5rem; margin: 0; font-weight: 800; }
-
-.rep-count {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--accent-blue);
-    margin: 10px 0;
-}
-
-.visual-area {
-    width: 100%;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 300px;
-}
-
-#ex-media {
-    max-width: 100%;
-    max-height: 40vh;
-    border-radius: 16px;
-    object-fit: contain;
-}
-
-.instruction-box {
-    font-size: 1.3rem;
-    line-height: 1.6;
-    color: #48484a;
-    margin-top: 20px;
-}
-
-footer {
-    padding: 20px 25px 50px 25px;
-    background: white;
-    border-top: 1px solid #efeff4;
-}
-
-.next-btn {
-    width: 100%;
-    padding: 24px;
-    background-color: var(--text-main);
-    color: white;
-    border: none;
-    border-radius: 16px;
-    font-size: 1.4rem;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.next-btn:active {
-    background-color: var(--accent-blue);
-}
+    <script src="app.js"></script>
+</body>
+</html>
