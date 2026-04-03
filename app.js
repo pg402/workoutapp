@@ -14,8 +14,6 @@ let currentIndex = 0;
 let userData = { name: "", email: "" };
 
 function handleLogin() {
-    console.log("Login button clicked"); // Debugging line
-    
     const nameInput = document.getElementById('user-name').value;
     const emailInput = document.getElementById('user-email').value;
 
@@ -27,16 +25,13 @@ function handleLogin() {
     userData.name = nameInput;
     userData.email = emailInput;
 
-    // 1. Transition UI Immediately
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('welcome-screen').style.display = 'block';
     document.getElementById('welcome-text').innerText = `Hi, ${userData.name}!`;
     
-    // 2. Set Streak Text
     const count = getStreak();
     document.getElementById('stats-text').innerText = `You've done ${count} workouts in the last 7 days.`;
 
-    // 3. Log to sheet (fire and forget)
     logToSheet("login");
 }
 
@@ -45,9 +40,7 @@ function getStreak() {
         const history = JSON.parse(localStorage.getItem('workoutHistory') || "[]");
         const sevenDaysAgo = new Date().getTime() - (7 * 24 * 60 * 60 * 1000);
         return history.filter(ts => ts > sevenDaysAgo).length;
-    } catch (e) {
-        return 0;
-    }
+    } catch (e) { return 0; }
 }
 
 function startWorkout() {
@@ -64,7 +57,6 @@ function nextExercise() {
     if (currentIndex < exercises.length) {
         updateUI();
     } else {
-        // Save completion
         const history = JSON.parse(localStorage.getItem('workoutHistory') || "[]");
         history.push(new Date().getTime());
         localStorage.setItem('workoutHistory', JSON.stringify(history));
@@ -76,7 +68,7 @@ function nextExercise() {
                 <h1 style="font-size: 3.5rem;">🎉</h1>
                 <h2>Workout Complete!</h2>
                 <p style="font-size: 1.2rem;">Great job, ${userData.name}. See you tomorrow!</p>
-                <button class="next-btn" style="margin-top: 30px;" onclick="location.reload()">RESTART</button>
+                <button class="next-btn" style="margin-top: 30px;" onclick="location.reload()">BACK TO START</button>
             </div>
         `;
         document.getElementById('progressBar').style.width = "100%";
@@ -86,10 +78,19 @@ function nextExercise() {
 
 function updateUI() {
     const ex = exercises[currentIndex];
+    const nextBtn = document.getElementById('next-button');
+    
     document.getElementById('ex-name').innerText = ex.name;
     document.getElementById('ex-reps').innerText = ex.reps;
     document.getElementById('ex-cue').innerText = ex.cue;
     document.getElementById('ex-media').src = ex.media;
+
+    // Change button text to "FINISHED!" if it's the last exercise
+    if (currentIndex === exercises.length - 1) {
+        nextBtn.innerText = "FINISHED!";
+    } else {
+        nextBtn.innerText = "NEXT EXERCISE";
+    }
 
     const progressPercentage = ((currentIndex + 1) / exercises.length) * 100;
     document.getElementById('progressBar').style.width = progressPercentage + "%";
@@ -97,7 +98,6 @@ function updateUI() {
 }
 
 function logToSheet(action) {
-    // Non-blocking fetch
     fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -108,5 +108,5 @@ function logToSheet(action) {
             action: action,
             timestamp: new Date().toLocaleString()
         })
-    }).catch(err => console.log("Logging ignored: ", err));
+    }).catch(err => console.log("Logging failed", err));
 }
