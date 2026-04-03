@@ -13,7 +13,9 @@ const exercises = [
 let currentIndex = 0;
 let userData = { name: "", email: "" };
 
-async function handleLogin() {
+function handleLogin() {
+    console.log("Login button clicked"); // Debugging line
+    
     const nameInput = document.getElementById('user-name').value;
     const emailInput = document.getElementById('user-email').value;
 
@@ -25,27 +27,27 @@ async function handleLogin() {
     userData.name = nameInput;
     userData.email = emailInput;
 
-    // UI Transition happens immediately to prevent "frozen" button feel
+    // 1. Transition UI Immediately
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('welcome-screen').style.display = 'block';
     document.getElementById('welcome-text').innerText = `Hi, ${userData.name}!`;
     
-    // Streak Logic: Get count from localStorage
-    const completionCount = getStreak();
-    document.getElementById('stats-text').innerText = `You've crushed ${completionCount} workouts in the last 7 days. Let's get moving!`;
+    // 2. Set Streak Text
+    const count = getStreak();
+    document.getElementById('stats-text').innerText = `You've done ${count} workouts in the last 7 days.`;
 
-    // Log to sheet in background
+    // 3. Log to sheet (fire and forget)
     logToSheet("login");
 }
 
 function getStreak() {
-    const history = JSON.parse(localStorage.getItem('workoutHistory') || "[]");
-    const now = new Date().getTime();
-    const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000);
-    
-    // Filter for only the last 7 days
-    const recent = history.filter(timestamp => timestamp > sevenDaysAgo);
-    return recent.length;
+    try {
+        const history = JSON.parse(localStorage.getItem('workoutHistory') || "[]");
+        const sevenDaysAgo = new Date().getTime() - (7 * 24 * 60 * 60 * 1000);
+        return history.filter(ts => ts > sevenDaysAgo).length;
+    } catch (e) {
+        return 0;
+    }
 }
 
 function startWorkout() {
@@ -56,21 +58,20 @@ function startWorkout() {
     updateUI();
 }
 
-async function nextExercise() {
+function nextExercise() {
     currentIndex++;
 
     if (currentIndex < exercises.length) {
         updateUI();
     } else {
-        // Save completion to local history for the streak counter
+        // Save completion
         const history = JSON.parse(localStorage.getItem('workoutHistory') || "[]");
         history.push(new Date().getTime());
         localStorage.setItem('workoutHistory', JSON.stringify(history));
 
-        await logToSheet("finish");
+        logToSheet("finish");
         
-        const content = document.getElementById('workout-content');
-        content.innerHTML = `
+        document.getElementById('workout-content').innerHTML = `
             <div style="margin-top: 50px;">
                 <h1 style="font-size: 3.5rem;">🎉</h1>
                 <h2>Workout Complete!</h2>
@@ -88,34 +89,24 @@ function updateUI() {
     document.getElementById('ex-name').innerText = ex.name;
     document.getElementById('ex-reps').innerText = ex.reps;
     document.getElementById('ex-cue').innerText = ex.cue;
-    
-    const imgElement = document.getElementById('ex-media');
-    imgElement.onerror = function() {
-        this.alt = "Video currently unavailable";
-    };
-    imgElement.src = ex.media;
+    document.getElementById('ex-media').src = ex.media;
 
     const progressPercentage = ((currentIndex + 1) / exercises.length) * 100;
     document.getElementById('progressBar').style.width = progressPercentage + "%";
     window.scrollTo(0, 0);
 }
 
-async function logToSheet(action) {
-    try {
-        // Using 'no-cors' means we can't see the response, 
-        // but it still sends the data to Google Sheets.
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name: userData.name,
-                email: userData.email,
-                action: action,
-                timestamp: new Date().toLocaleString()
-            })
-        });
-    } catch (e) {
-        console.error("Sheet logging failed", e);
-    }
+function logToSheet(action) {
+    // Non-blocking fetch
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            name: userData.name,
+            email: userData.email,
+            action: action,
+            timestamp: new Date().toLocaleString()
+        })
+    }).catch(err => console.log("Logging ignored: ", err));
 }
