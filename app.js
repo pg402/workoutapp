@@ -25,17 +25,27 @@ async function handleLogin() {
     userData.name = nameInput;
     userData.email = emailInput;
 
-    // Log the login event
-    logToSheet("login");
-
-    // UI Transition to Welcome
+    // UI Transition happens immediately to prevent "frozen" button feel
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('welcome-screen').style.display = 'block';
     document.getElementById('welcome-text').innerText = `Hi, ${userData.name}!`;
     
-    // Placeholder for the "X out of 7 days" logic 
-    // This will display while we wait for the database to grow
-    document.getElementById('stats-text').innerText = `Great to see you today. Let's get moving!`;
+    // Streak Logic: Get count from localStorage
+    const completionCount = getStreak();
+    document.getElementById('stats-text').innerText = `You've crushed ${completionCount} workouts in the last 7 days. Let's get moving!`;
+
+    // Log to sheet in background
+    logToSheet("login");
+}
+
+function getStreak() {
+    const history = JSON.parse(localStorage.getItem('workoutHistory') || "[]");
+    const now = new Date().getTime();
+    const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000);
+    
+    // Filter for only the last 7 days
+    const recent = history.filter(timestamp => timestamp > sevenDaysAgo);
+    return recent.length;
 }
 
 function startWorkout() {
@@ -52,7 +62,11 @@ async function nextExercise() {
     if (currentIndex < exercises.length) {
         updateUI();
     } else {
-        // Log the completion event
+        // Save completion to local history for the streak counter
+        const history = JSON.parse(localStorage.getItem('workoutHistory') || "[]");
+        history.push(new Date().getTime());
+        localStorage.setItem('workoutHistory', JSON.stringify(history));
+
         await logToSheet("finish");
         
         const content = document.getElementById('workout-content');
@@ -88,10 +102,11 @@ function updateUI() {
 
 async function logToSheet(action) {
     try {
+        // Using 'no-cors' means we can't see the response, 
+        // but it still sends the data to Google Sheets.
         await fetch(SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
-            cache: 'no-cache',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 name: userData.name,
