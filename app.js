@@ -13,7 +13,7 @@ const exercises = [
 let currentIndex = 0;
 let userData = { name: "", email: "" };
 
-function handleLogin() {
+async function handleLogin() {
     const nameInput = document.getElementById('user-name').value;
     const emailInput = document.getElementById('user-email').value;
 
@@ -25,22 +25,28 @@ function handleLogin() {
     userData.name = nameInput;
     userData.email = emailInput;
 
+    // UI Transition
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('welcome-screen').style.display = 'block';
     document.getElementById('welcome-text').innerText = `Hi, ${userData.name}!`;
     
-    const count = getStreak();
-    document.getElementById('stats-text').innerText = `You've done ${count} workouts in the last 7 days.`;
-
+    // Fetch count from Google Sheet instead of localStorage
+    fetchStreakFromSheet();
+    
+    // Log the login event
     logToSheet("login");
 }
 
-function getStreak() {
+async function fetchStreakFromSheet() {
     try {
-        const history = JSON.parse(localStorage.getItem('workoutHistory') || "[]");
-        const sevenDaysAgo = new Date().getTime() - (7 * 24 * 60 * 60 * 1000);
-        return history.filter(ts => ts > sevenDaysAgo).length;
-    } catch (e) { return 0; }
+        // We use a GET request to ask the sheet for the count
+        const response = await fetch(`${SCRIPT_URL}?email=${userData.email}&action=getCount`);
+        const data = await response.json();
+        document.getElementById('stats-text').innerText = `You've crushed ${data.count} workouts in the last 7 days.`;
+    } catch (e) {
+        console.error("Could not fetch streak", e);
+        document.getElementById('stats-text').innerText = "Ready for your workout?";
+    }
 }
 
 function startWorkout() {
@@ -53,16 +59,10 @@ function startWorkout() {
 
 function nextExercise() {
     currentIndex++;
-
     if (currentIndex < exercises.length) {
         updateUI();
     } else {
-        const history = JSON.parse(localStorage.getItem('workoutHistory') || "[]");
-        history.push(new Date().getTime());
-        localStorage.setItem('workoutHistory', JSON.stringify(history));
-
         logToSheet("finish");
-        
         document.getElementById('workout-content').innerHTML = `
             <div style="margin-top: 50px;">
                 <h1 style="font-size: 3.5rem;">🎉</h1>
@@ -79,13 +79,11 @@ function nextExercise() {
 function updateUI() {
     const ex = exercises[currentIndex];
     const nextBtn = document.getElementById('next-button');
-    
     document.getElementById('ex-name').innerText = ex.name;
     document.getElementById('ex-reps').innerText = ex.reps;
     document.getElementById('ex-cue').innerText = ex.cue;
     document.getElementById('ex-media').src = ex.media;
 
-    // Change button text to "FINISHED!" if it's the last exercise
     if (currentIndex === exercises.length - 1) {
         nextBtn.innerText = "FINISHED!";
     } else {
@@ -108,5 +106,5 @@ function logToSheet(action) {
             action: action,
             timestamp: new Date().toLocaleString()
         })
-    }).catch(err => console.log("Logging failed", err));
+    });
 }
