@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyI6ftoxxGnXLSmHjIhkVg1RYApznqve_SXVc1LT3MAN-FjiNcXowJEhkvFGT1Q9A/exec"; 
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgW53mXHBQRXUxLwSBf8TnKC3Zyz_OLvkD0hvfNze06HUrU6oNFIMRQZTfabIYy9G8/exec"; 
 
 const exercises = [
     { name: "Cat-Cow", reps: "5 Repetitions", cue: "Move with your breath. Don't force the range of motion.", media: "./1.gif" },
