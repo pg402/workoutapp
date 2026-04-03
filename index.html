@@ -9,12 +9,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div class="app-container">
         <div id="progress-wrapper" class="progress-container" style="display: none;">
             <div class="progress-bar" id="progressBar"></div>
         </div>
-
         <main class="exercise-card" id="workout-content">
             <div id="login-screen">
                 <h1 style="margin-bottom: 30px;">Welcome Back</h1>
@@ -22,34 +20,28 @@
                 <input type="email" id="user-email" placeholder="Email" class="login-input">
                 <button class="next-btn" onclick="handleLogin()" style="margin-top: 20px;">LOGIN</button>
             </div>
-            
             <div id="welcome-screen" style="display: none;">
                 <h2 id="welcome-text">Hi!</h2>
-                <p id="stats-text" style="font-size: 1.3rem; margin: 20px 0; color: #48484a;"></p>
+                <p id="stats-text" style="font-size: 1.3rem; margin: 20px 0; color: #48484a;">Loading your progress...</p>
                 <button class="next-btn" onclick="startWorkout()">START WORKOUT</button>
             </div>
-
             <div id="exercise-area" style="display: none;">
                 <header>
                     <h2 id="ex-name"></h2>
                     <p class="rep-count" id="ex-reps"></p>
                 </header>
-
                 <div class="visual-area">
                     <img id="ex-media" src="" alt="Workout Animation">
                 </div>
-
                 <div class="instruction-box">
                     <p id="ex-cue"></p>
                 </div>
             </div>
         </main>
-
         <footer id="app-footer" style="display: none;">
             <button class="next-btn" id="next-button" onclick="nextExercise()">NEXT EXERCISE</button>
         </footer>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>
